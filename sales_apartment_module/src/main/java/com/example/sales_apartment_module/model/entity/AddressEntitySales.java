@@ -1,4 +1,4 @@
-package com.example.sales_apartment_module.entity;
+package com.example.sales_apartment_module.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

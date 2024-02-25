@@ -25,25 +25,16 @@ public class ApartmentController {
     }
 
     @GetMapping(GET_RATING)
-    public Integer countAverageRating(@RequestParam String city,
-                                      @RequestParam String street,
-                                      @RequestParam String homeNumber) {
-        return apartmentService.getAverageRating(street, city, homeNumber);
+    public Double countAverageRating(@PathVariable Long id) {
+        return apartmentService.getAverageRating(id);
     }
 
     @PostMapping(BOOKING)
-    public BookingResponseDto showApartmentForBooking(@RequestParam Long id,
-                                                      @RequestHeader(required = false) String token,
-                                                      @RequestBody(required = false) BookingResponseDto bookingDto) {
-        if (!isNull(bookingDto)) {
+    public BookingResponseDto showApartmentForBooking(@PathVariable Long id) {
             return apartmentService.showApartment(id);
-        }
-        return null;
     }
     // если дто не пусто, проверить токен на валиность(, если пустой - зарегестрируйтесь, если с
 // токеном всё норм
-// создать новые миграции booking info, дата начала и конца бронирования, общая сумма,
-// реферальные ссылки апатаменты, юзер, скидки(продукт)
 
     @PostMapping(APARTMENTS_BY_GEO)
     public List<ApartmentInfoDto> showApartmentByLocation(@RequestBody LocationInfoDto locationInfoDto) {

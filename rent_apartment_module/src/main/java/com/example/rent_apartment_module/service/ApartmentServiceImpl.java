@@ -1,6 +1,7 @@
 package com.example.rent_apartment_module.service;
 
 import com.example.rent_apartment_module.dao.ApartmentDao;
+import com.example.rent_apartment_module.dao.RatingDao;
 import com.example.rent_apartment_module.mapper.RentApartmentMapper;
 import com.example.rent_apartment_module.mapper.RentMapper;
 import com.example.rent_apartment_module.model.dto.ApartmentInfoDto;
@@ -34,6 +35,8 @@ public class ApartmentServiceImpl implements ApartmentService {
 
     private final ApartmentDao apartmentDao;
 
+    private final RatingDao ratingDao;
+
     private final RentMapper rentMapper;
 
     private final IntegrationService integrationService;
@@ -51,9 +54,10 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public Integer getAverageRating(String street, String city, String homeNumber) {
+    public Double getAverageRating(Long id) {
 
-        return apartmentRepository.getAverageRating(street, city, homeNumber);
+        ApartmentEntityRent apartmentEntityRent = apartmentRepository.findById(id).get();
+        return ratingDao.findRatingEntitiesByApartmentEntityByQueryDSL(apartmentEntityRent);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class ApartmentServiceImpl implements ApartmentService {
         String city = getCityName(locationInfo.getResults());
         List<ApartmentEntityRent> apartments = apartmentDao.findApartmentByQueryDsl(city);
 
-       return rentMapper.toApartmentInfoListDto(apartments);
+        return rentMapper.toApartmentInfoListDto(apartments);
 
     }
 

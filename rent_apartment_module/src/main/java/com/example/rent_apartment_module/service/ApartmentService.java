@@ -10,7 +10,7 @@ public interface ApartmentService {
 
     String saveApartmentEntity(ApartmentInfoDto apartmentInfoDto);
 
-    Integer getAverageRating(String street, String city, String homeNumber);
+    Double getAverageRating(Long id);
 
     BookingResponseDto showApartment(Long id);
 

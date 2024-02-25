@@ -1,4 +1,4 @@
-package com.example.sales_apartment_module.entity;
+package com.example.sales_apartment_module.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,9 @@ public class BookingEntitySales {
 
     @Column(name = "final_cost")
     private Integer finalCost;
+
+    @Column(name = "people_amount")
+    private Integer peopleAmount;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "apartment_id")

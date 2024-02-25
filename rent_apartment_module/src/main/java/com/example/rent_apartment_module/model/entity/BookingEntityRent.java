@@ -31,6 +31,9 @@ public class BookingEntityRent {
     @Column(name = "final_cost")
     private Integer finalCost;
 
+    @Column(name = "people_amount")
+    private Integer peopleAmount;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "apartment_id")
     private ApartmentEntityRent apartmentId;
