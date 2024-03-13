@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Data
@@ -27,9 +26,8 @@ public class RatingEntityRent {
     @Column(name = "comment")
     private String comment;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "apartment_entity_id")
-    @BatchSize(size = 5)
     private ApartmentEntityRent apartmentEntityRent;
 
 }

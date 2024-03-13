@@ -28,7 +28,7 @@ public class TokenScheduler {
         for (UserRentEntityRent user : tokenList) {
             LocalDateTime tokenDate = parseTokenValue(user.getToken());
             if (!checkTokenDate(tokenDate)) {
-                log.info("Токен "+ user.getToken()+ " истёк и был удалён");
+                log.info("Токен " + user.getToken() + " истёк и был удалён");
                 user.setToken(null);
                 userRentRepository.save(user);
             }

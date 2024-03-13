@@ -29,6 +29,7 @@ public class ApartmentDaoImpl implements ApartmentDao {
         ApartmentEntityRent apartmentEntityRent = entityManager.createQuery(query).getSingleResult();
         return apartmentEntityRent;
     }
+
     public ApartmentEntityRent findApartmentByQueryDsl(Long id) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         ApartmentEntityRent apartment = queryFactory.selectFrom(apartmentEntityRent)
@@ -48,6 +49,7 @@ public class ApartmentDaoImpl implements ApartmentDao {
 
         return resultList;
     }
+
     public List<ApartmentEntityRent> findApartmentByQueryDsl(String city) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         List<ApartmentEntityRent> apartment = queryFactory.selectFrom(apartmentEntityRent)

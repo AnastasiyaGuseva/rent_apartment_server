@@ -16,5 +16,13 @@ public class RentApartmentModuleApplication {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+    //Настройка timeout
+//    @Bean
+//    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+//        return restTemplateBuilder
+//                .setReadTimeout(Duration.ofHours(2L))
+//                .setConnectTimeout(Duration.ofHours(2L))
+//                .build();
+//    }
 
 }

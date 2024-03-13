@@ -1,9 +1,11 @@
 package com.example.rent_apartment_module.mapper;
 
 import com.example.rent_apartment_module.model.dto.ApartmentInfoDto;
+import com.example.rent_apartment_module.model.dto.BookingInfoDto;
 import com.example.rent_apartment_module.model.dto.RegistrationUserInfoDto;
 import com.example.rent_apartment_module.model.entity.AddressEntityRent;
 import com.example.rent_apartment_module.model.entity.ApartmentEntityRent;
+import com.example.rent_apartment_module.model.entity.BookingEntityRent;
 import com.example.rent_apartment_module.model.entity.UserRentEntityRent;
 import org.springframework.stereotype.Component;
 
@@ -49,5 +51,14 @@ public class RentApartmentMapper {
                 .roomsCount(apartmentEntityRent.getRoomsCount())
                 .build();
         return apartmentInfoDto;
+    }
+
+    public BookingEntityRent toBookingInfoEntity(BookingInfoDto bookingInfoDto) {
+        BookingEntityRent bookingEntityRent = BookingEntityRent.builder()
+                .peopleAmount(bookingInfoDto.getPeopleAmount())
+                .endDate(bookingInfoDto.getEndDate())
+                .startDate(bookingInfoDto.getStartDate())
+                .build();
+        return bookingEntityRent;
     }
 }

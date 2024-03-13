@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static com.example.rent_apartment_module.constant.RentApartmentConstant.GEO;
+import static com.example.rent_apartment_module.constant.RentApartmentConstant.PRODUCT;
 
 
 @Service
@@ -26,9 +27,9 @@ public class IntegrationServiceImpl implements IntegrationService {
 
     @Override
     public OpenCageData getInfoByLocation(LocationInfoDto infoDto) {
-        String url = formUrl(infoDto, decodeKey());
+        String url = formUrlGeo(infoDto, decodeKey(GEO));
 
-        return  restTemplate.exchange(
+        return restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 null,
@@ -36,14 +37,35 @@ public class IntegrationServiceImpl implements IntegrationService {
 
     }
 
-    private String formUrl(LocationInfoDto infoDto, String key) {
+    public void getInfoByBookingId(Long id) {
+        String url = formUrlProduct(id, decodeKey(PRODUCT));
+
+        restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                Void.class,
+                id
+        ).getBody();
+
+    }
+
+    private String formUrlGeo(LocationInfoDto infoDto, String key) {
+        //
         IntegrationEntityRent config = repository.findById(GEO).get();
         return String.format(config.getPathInfo(),
                 infoDto.getLongitude(), infoDto.getWidth(), key);
     }
 
-    private String decodeKey() {
-        IntegrationEntityRent config = repository.findById(GEO).get();
+    private String formUrlProduct(Long id, String key) {
+        //
+        IntegrationEntityRent config = repository.findById(PRODUCT).get();
+        return String.format(config.getPathInfo(),
+                id, key);
+    }
+
+    private String decodeKey(String serviceId) {
+        IntegrationEntityRent config = repository.findById(serviceId).get();
         byte[] decoded = Base64.getDecoder().decode(config.getKeyInfo());
         String decodedStr = new String(decoded, StandardCharsets.UTF_8);
         return decodedStr;

@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface UserRentRepository extends JpaRepository<UserRentEntityRent, Integer> {
-    //    Optional<UserRentEntityRent> findByNickNameAndLogin (String nickName, String login);
     UserRentEntityRent findUserRentEntityByNickNameAndLogin(String nickName, String login);
 
     @Query(nativeQuery = true, value = "SELECT * FROM user_info WHERE nick_name = :nickName")
@@ -24,7 +23,7 @@ public interface UserRentRepository extends JpaRepository<UserRentEntityRent, In
 
     List<UserRentEntityRent> findUserRentEntityByTokenIsNotNull();
 
-    UserRentEntityRent findByToken (String token);
+    UserRentEntityRent findByToken(String token);
 
 
 }

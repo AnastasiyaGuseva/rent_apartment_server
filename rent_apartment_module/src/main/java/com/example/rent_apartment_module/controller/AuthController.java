@@ -3,6 +3,7 @@ package com.example.rent_apartment_module.controller;
 import com.example.rent_apartment_module.model.dto.AuthorisationUserInfoDto;
 import com.example.rent_apartment_module.model.dto.RegistrationUserInfoDto;
 import com.example.rent_apartment_module.service.UserRentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,7 @@ public class AuthController {
     private final UserRentService userRentService;
 
     @PostMapping(REG)
-    public String registrationNewUser(@RequestBody RegistrationUserInfoDto userInfoDto) {
+    public String registrationNewUser(@RequestBody @Valid RegistrationUserInfoDto userInfoDto) {
         return userRentService.saveUserRentEntity(userInfoDto);
     }
 

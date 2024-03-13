@@ -2,9 +2,6 @@ package com.example.rent_apartment_module.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -24,7 +21,7 @@ public class ApartmentEntityRent {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "apartmentEntityRent")
-    private  AddressEntityRent address;
+    private AddressEntityRent address;
 
     @Column(name = "price")
     private Integer price;
@@ -35,11 +32,10 @@ public class ApartmentEntityRent {
     @Column(name = "free_flag")
     private Boolean freeFlag;
 
-    @Column(name="fool_rating")
+    @Column(name = "fool_rating")
     private Double foolRating;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "apartmentEntityRent")
-    @BatchSize(size = 5)
     private List<RatingEntityRent> apartmentRating;
 
 }

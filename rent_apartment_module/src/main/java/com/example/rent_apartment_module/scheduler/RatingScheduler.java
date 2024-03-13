@@ -28,9 +28,6 @@ public class RatingScheduler {
         for (ApartmentEntityRent apartment : apartments) {
             Double avgRating = ratingDao.findRatingEntitiesByApartmentEntityByQueryDSL(apartment);
             apartment.setFoolRating(avgRating);
-//            List<RatingEntityRent> rating = ratingDao.findRatingEntitiesByApartmentEntity(apartment);
-//            int sum = rating.stream().mapToInt(RatingEntityRent::getOverallRating).sum();
-//            apartment.setFoolRating(sum / rating.size());
             apartmentRepository.save(apartment);
         }
         log.info("Обновление рейтинга закончено " + LocalDateTime.now());

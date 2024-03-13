@@ -2,18 +2,22 @@ package com.example.rent_apartment_module.service;
 
 import com.example.rent_apartment_module.dao.ApartmentDao;
 import com.example.rent_apartment_module.dao.RatingDao;
+import com.example.rent_apartment_module.dao.UserRentDao;
 import com.example.rent_apartment_module.mapper.RentApartmentMapper;
 import com.example.rent_apartment_module.mapper.RentMapper;
 import com.example.rent_apartment_module.model.dto.ApartmentInfoDto;
+import com.example.rent_apartment_module.model.dto.BookingInfoDto;
 import com.example.rent_apartment_module.model.dto.BookingResponseDto;
 import com.example.rent_apartment_module.model.dto.LocationInfoDto;
 import com.example.rent_apartment_module.model.dto.geoDto.OpenCageData;
 import com.example.rent_apartment_module.model.dto.geoDto.Result;
 import com.example.rent_apartment_module.model.entity.AddressEntityRent;
 import com.example.rent_apartment_module.model.entity.ApartmentEntityRent;
-import com.example.rent_apartment_module.repository.AddressRepository;
-import com.example.rent_apartment_module.repository.ApartmentRepository;
+import com.example.rent_apartment_module.model.entity.BookingEntityRent;
+import com.example.rent_apartment_module.model.entity.UserRentEntityRent;
+import com.example.rent_apartment_module.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +45,16 @@ public class ApartmentServiceImpl implements ApartmentService {
 
     private final IntegrationService integrationService;
 
+    private final BookingRepository bookingRepository;
+
+    private final UserRentRepository userRepository;
+
+    private final UserRentDao userDao;
+
+    private final IntegrationRepository integrationRepository;
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
 
     @Override
     public String saveApartmentEntity(ApartmentInfoDto apartmentInfoDto) {
@@ -55,14 +69,12 @@ public class ApartmentServiceImpl implements ApartmentService {
 
     @Override
     public Double getAverageRating(Long id) {
-
         ApartmentEntityRent apartmentEntityRent = apartmentRepository.findById(id).get();
         return ratingDao.findRatingEntitiesByApartmentEntityByQueryDSL(apartmentEntityRent);
     }
 
     @Override
     public BookingResponseDto showApartment(Long id) {
-        //  ApartmentEntityRent apartment = apartmentRepository.findById(id).orElseThrow(() -> new RuntimeException(FIND_APARTMENT));
         ApartmentEntityRent apartment = apartmentDao.findApartmentByQueryDsl(id);
         return new BookingResponseDto(IS_FREE, rentMapper.toApartmentDto(apartment, apartment.getAddress()));
     }
@@ -76,6 +88,23 @@ public class ApartmentServiceImpl implements ApartmentService {
 
         return rentMapper.toApartmentInfoListDto(apartments);
 
+    }
+
+    @Override
+    public void bookingApartment(BookingInfoDto bookingInfoDto, Long apartmentId, String token) {
+        BookingEntityRent bookingInfoEntity = mapper.toBookingInfoEntity(bookingInfoDto);
+        UserRentEntityRent userRentEntityRent = userRepository.findByToken(token);
+        ApartmentEntityRent apartmentEntityRent = apartmentRepository.findById(apartmentId).get();
+        bookingInfoEntity.setUserId(userRentEntityRent);
+        bookingInfoEntity.setApartmentId(apartmentEntityRent);
+        BookingEntityRent saved = bookingRepository.save(bookingInfoEntity);
+        try {
+            integrationService.getInfoByBookingId(apartmentId);
+        } catch (Exception e) {
+            kafkaTemplate.send("booking_id", String.valueOf(saved.getId()));
+            //:todo  вызов кафка брокера
+        }
+        //  return "Бронирование прошло успешно";
     }
 
     private String getCityName(List<Result> results) {

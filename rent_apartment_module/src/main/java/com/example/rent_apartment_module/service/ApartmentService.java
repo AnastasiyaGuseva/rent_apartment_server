@@ -1,6 +1,7 @@
 package com.example.rent_apartment_module.service;
 
 import com.example.rent_apartment_module.model.dto.ApartmentInfoDto;
+import com.example.rent_apartment_module.model.dto.BookingInfoDto;
 import com.example.rent_apartment_module.model.dto.BookingResponseDto;
 import com.example.rent_apartment_module.model.dto.LocationInfoDto;
 
@@ -15,4 +16,6 @@ public interface ApartmentService {
     BookingResponseDto showApartment(Long id);
 
     List<ApartmentInfoDto> apartmentByLocation(LocationInfoDto infoDto);
+
+    void bookingApartment(BookingInfoDto bookingInfoDto, Long apartmentId, String token);
 }

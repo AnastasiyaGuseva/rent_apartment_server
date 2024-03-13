@@ -9,4 +9,5 @@ public interface RatingDao {
     List<RatingEntityRent> findRatingEntitiesByApartmentEntity(ApartmentEntityRent apartmentEntityRent);
 
     Double findRatingEntitiesByApartmentEntityByQueryDSL(ApartmentEntityRent apartmentEntityRent);
+
 }

@@ -41,10 +41,4 @@ public class BookingEntitySales {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private UserRentEntitySales userId;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
-    private ProductDiscountEntitySales productId;
-    // создать новые миграции booking info, дата начала
-    // и конца бронирования, общая сумма, реферальные ссылки апатаменты, юзер, скидки(продукт)
 }

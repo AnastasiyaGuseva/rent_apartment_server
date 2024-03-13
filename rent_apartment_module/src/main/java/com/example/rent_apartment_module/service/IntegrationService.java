@@ -6,4 +6,6 @@ import com.example.rent_apartment_module.model.dto.geoDto.OpenCageData;
 public interface IntegrationService {
     OpenCageData getInfoByLocation(LocationInfoDto infoDto);
 
+    void getInfoByBookingId(Long id);
+
 }

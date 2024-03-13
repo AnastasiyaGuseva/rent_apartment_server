@@ -5,13 +5,14 @@ import com.example.sales_apartment_module.repository.BookingEntityRepository;
 import com.example.sales_apartment_module.repository.ProductDiscountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Month;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import static com.example.sales_apartment_module.constant.SalesApartmentConstant.MESSAGE;
+import static com.example.sales_apartment_module.constant.SalesApartmentConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +22,12 @@ public class DiscountServiceImpl implements DiscountService {
 
     private final ProductDiscountRepository discountRepository;
 
+    private final EmailSenderService emailSenderService;
+
     //метод получение бронирования по id
-    private BookingEntitySales bookingByID(Long id) {
-        return bookingRepository.findById(id).get();
+    public BookingEntitySales bookingByID(Long id) {
+      return   bookingRepository.findByIdJPQL(id);
+        //return bookingRepository.findById(id).get();//LazyInitialization
     }
 
     //метод проверки и получения скидки по дате рождения
@@ -36,9 +40,9 @@ public class DiscountServiceImpl implements DiscountService {
         if (bookingMonth.equals(month) && bookingDayOfMonth.equals(dayOfMonth) &&
                 discountRepository.findById(6L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(6L).get().getDiscountAmount();
-            return bookingEntitySales.getFinalCost() - discountAmount;
+            return bookingEntitySales.getApartmentId().getPrice() - discountAmount;
         }
-        return bookingEntitySales.getFinalCost();
+        return bookingEntitySales.getApartmentId().getPrice();
     }
 
     //метод проверки и получения скидки по городу проживания
@@ -48,9 +52,9 @@ public class DiscountServiceImpl implements DiscountService {
                 bookingEntitySales.getApartmentId().getAddress().getCity()) &&
                 discountRepository.findById(7L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(7L).get().getDiscountAmount();
-            return bookingEntitySales.getFinalCost() - discountAmount;
+            return bookingEntitySales.getApartmentId().getPrice() - discountAmount;
         }
-        return bookingEntitySales.getFinalCost();
+        return bookingEntitySales.getApartmentId().getPrice();
     }
 
     //метод проверки и получения скидки на определённые сезоны
@@ -61,9 +65,9 @@ public class DiscountServiceImpl implements DiscountService {
                 || bookingMonth.equals(Month.MARCH) &&
                 discountRepository.findById(3L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(3L).get().getDiscountAmount();
-            return bookingEntitySales.getFinalCost() - discountAmount;
+            return bookingEntitySales.getApartmentId().getPrice() - discountAmount;
         }
-        return bookingEntitySales.getFinalCost();
+        return bookingEntitySales.getApartmentId().getPrice();
     }
 
     //метод проверки и получения скидки по кол-ву бронирования
@@ -72,9 +76,9 @@ public class DiscountServiceImpl implements DiscountService {
         if (bookingEntitySales.getUserId().getBookingCount() >= 3 &&
                 discountRepository.findById(5L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(5L).get().getDiscountAmount();
-            return bookingEntitySales.getFinalCost() - discountAmount;
+            return bookingEntitySales.getApartmentId().getPrice() - discountAmount;
         }
-        return bookingEntitySales.getFinalCost();
+        return bookingEntitySales.getApartmentId().getPrice();
     }
 
     //метод проверки и получения скидки на первое бронирование
@@ -83,20 +87,20 @@ public class DiscountServiceImpl implements DiscountService {
         if (bookingEntitySales.getUserId().getBookingCount() == 0 &&
                 discountRepository.findById(1L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(1L).get().getDiscountAmount();
-            return bookingEntitySales.getFinalCost() - discountAmount;
+            return bookingEntitySales.getApartmentId().getPrice() - discountAmount;
         }
-        return bookingEntitySales.getFinalCost();
+        return bookingEntitySales.getApartmentId().getPrice();
     }
 
     //метод проверки группового бронирования
     private Integer discountByPeopleAmount(Long id) {
-        BookingEntitySales bookingEntitySales = bookingByID(id);
+        BookingEntitySales bookingEntitySales =  bookingRepository.findByIdJPQL(id);//LazyInitialization
         if (bookingEntitySales.getPeopleAmount() >= 3 &&
                 discountRepository.findById(4L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(4L).get().getDiscountAmount();
-            return bookingEntitySales.getFinalCost() - discountAmount;
+            return bookingEntitySales.getApartmentId().getPrice() - discountAmount;
         }
-        return bookingEntitySales.getFinalCost();
+        return bookingEntitySales.getApartmentId().getPrice();
     }
 
     //метод проверки скидки по длительности бронирования
@@ -105,15 +109,14 @@ public class DiscountServiceImpl implements DiscountService {
         if (bookingEntitySales.getEndDate().isAfter(bookingEntitySales.getStartDate().plusWeeks(2)) &&
                 discountRepository.findById(2L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(2L).get().getDiscountAmount();
-            return bookingEntitySales.getFinalCost() - discountAmount;
+            return bookingEntitySales.getApartmentId().getPrice() - discountAmount;
         }
-        return bookingEntitySales.getFinalCost();
+        return bookingEntitySales.getApartmentId().getPrice();
     }
 
     //метод применения разных скидок и вычисления наиболее выгодной
     //todo: Формирование и вывод сообщения о проведённом бронировании, цене, адресе и применённой скидке
     public String optimalDiscount(Long id) {
-
         Integer individualCost = List.of(
                 discountByPeopleAmount(id),
                 discountByBirthDate(id),
@@ -126,8 +129,17 @@ public class DiscountServiceImpl implements DiscountService {
         BookingEntitySales bookingEntitySales = bookingByID(id);
         bookingEntitySales.setFinalCost(individualCost);
         bookingRepository.save(bookingEntitySales);
-        return String.format(MESSAGE, bookingEntitySales.getApartmentId().getAddress().toString(),
-                bookingEntitySales.getFinalCost());
+        sendEmail(id);
+        return MESSAGE_MAIL;
     }
 
+    private void sendEmail(Long id) {
+        BookingEntitySales bookingEntitySales = bookingByID(id);
+        String city = bookingEntitySales.getApartmentId().getAddress().getCity();
+        String street = bookingEntitySales.getApartmentId().getAddress().getStreet();
+        String homeNumber = bookingEntitySales.getApartmentId().getAddress().getHomeNumber();
+        String message = String.format(MESSAGE, city, street, homeNumber,
+                bookingEntitySales.getFinalCost());
+        emailSenderService.sendEmail(MESSAGE_BOOKING, message, bookingEntitySales.getUserId().getLogin());
+    }
 }

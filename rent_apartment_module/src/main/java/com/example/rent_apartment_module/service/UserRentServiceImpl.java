@@ -1,6 +1,7 @@
 package com.example.rent_apartment_module.service;
 
 import com.example.rent_apartment_module.dao.UserRentDao;
+import com.example.rent_apartment_module.exception.UserAuthException;
 import com.example.rent_apartment_module.mapper.RentApartmentMapper;
 import com.example.rent_apartment_module.model.dto.AuthorisationUserInfoDto;
 import com.example.rent_apartment_module.model.dto.RegistrationUserInfoDto;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.example.rent_apartment_module.exception.ExceptionConstant.NOT_UNIQUE_NICKNAME;
+import static com.example.rent_apartment_module.exception.ExceptionConstant.NOT_UNIQUE_NICKNAME_CODE;
 import static java.util.Objects.isNull;
 
 @Service
@@ -29,7 +32,7 @@ public class UserRentServiceImpl implements UserRentService {
 
         UserRentEntityRent userByNickName = userRentDao.findUserByNickNameQueryDSL(userInfoDto.getNickName());
         if (!isNull(userByNickName)) {
-            throw new RuntimeException("Никнейм занят");
+            throw new UserAuthException(NOT_UNIQUE_NICKNAME,NOT_UNIQUE_NICKNAME_CODE);
         }
         UserRentEntityRent userByLogin = userRentDao.findUserByLoginQueryDSL(userInfoDto.getLogin());
         if (!isNull(userByLogin)) {
