@@ -23,6 +23,9 @@ public class RentApartmentConstant {
     public final static String IS_FREE = "Апартаменты доступны для бронирования";
     public final static String UNSAFE_PASSWORD_MESSAGE = "Пароль должен состоять не менее чем из 8 символов и должен " +
             "быть комбинацией заглавных и строчных букв, цифр и специальных символов.";
+    public final static String MESSAGE_BOOKING = "Бронирование прошло успешно";
+
+    public final static String SUCCESSFUL_REGISTRATION = "Успешная регистрация";
 
     /**
      * Integration constants

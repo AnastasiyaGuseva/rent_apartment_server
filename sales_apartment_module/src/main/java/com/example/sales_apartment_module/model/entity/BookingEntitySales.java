@@ -1,15 +1,13 @@
 package com.example.sales_apartment_module.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Setter
+@Getter
 @Table(name = "booking_info")
 @Builder
 @NoArgsConstructor

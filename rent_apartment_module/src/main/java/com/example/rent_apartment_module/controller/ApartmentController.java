@@ -5,7 +5,6 @@ import com.example.rent_apartment_module.model.dto.BookingInfoDto;
 import com.example.rent_apartment_module.model.dto.BookingResponseDto;
 import com.example.rent_apartment_module.model.dto.LocationInfoDto;
 import com.example.rent_apartment_module.service.ApartmentService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +40,7 @@ public class ApartmentController {
     }
 
     @PostMapping(BOOKING_APARTMENT)
-    public void bookingApartment(@RequestBody BookingInfoDto bookingInfoDto, @RequestHeader("token") String token, @PathVariable Long apartmentId) {
-        apartmentService.bookingApartment(bookingInfoDto, apartmentId, token);
+    public String bookingApartment(@RequestBody BookingInfoDto bookingInfoDto, @RequestHeader("token") String token, @PathVariable Long apartmentId) {
+        return apartmentService.bookingApartment(bookingInfoDto, apartmentId, token);
     }
 }

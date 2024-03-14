@@ -17,5 +17,5 @@ public interface ApartmentService {
 
     List<ApartmentInfoDto> apartmentByLocation(LocationInfoDto infoDto);
 
-    void bookingApartment(BookingInfoDto bookingInfoDto, Long apartmentId, String token);
+    String bookingApartment(BookingInfoDto bookingInfoDto, Long apartmentId, String token);
 }

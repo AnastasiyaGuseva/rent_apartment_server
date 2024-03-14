@@ -4,6 +4,7 @@ import com.example.sales_apartment_module.service.DiscountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class KafkaConsumer {
     private final DiscountService discountService;
 
     @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
+    @Transactional
     public void listen(String message) {
         synchronized (messages) {
             messages.add(message);

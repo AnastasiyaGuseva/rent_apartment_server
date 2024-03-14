@@ -5,7 +5,6 @@ import com.example.sales_apartment_module.repository.BookingEntityRepository;
 import com.example.sales_apartment_module.repository.ProductDiscountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Month;
 import java.util.Comparator;
@@ -26,8 +25,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     //метод получение бронирования по id
     public BookingEntitySales bookingByID(Long id) {
-      return   bookingRepository.findByIdJPQL(id);
-        //return bookingRepository.findById(id).get();//LazyInitialization
+        return bookingRepository.findById(id).get();
     }
 
     //метод проверки и получения скидки по дате рождения
@@ -94,7 +92,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     //метод проверки группового бронирования
     private Integer discountByPeopleAmount(Long id) {
-        BookingEntitySales bookingEntitySales =  bookingRepository.findByIdJPQL(id);//LazyInitialization
+        BookingEntitySales bookingEntitySales = bookingByID(id);//LazyInitialization
         if (bookingEntitySales.getPeopleAmount() >= 3 &&
                 discountRepository.findById(4L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(4L).get().getDiscountAmount();

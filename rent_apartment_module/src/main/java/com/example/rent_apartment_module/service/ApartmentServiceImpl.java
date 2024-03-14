@@ -2,7 +2,7 @@ package com.example.rent_apartment_module.service;
 
 import com.example.rent_apartment_module.dao.ApartmentDao;
 import com.example.rent_apartment_module.dao.RatingDao;
-import com.example.rent_apartment_module.dao.UserRentDao;
+import com.example.rent_apartment_module.exception.RestTemplateException;
 import com.example.rent_apartment_module.mapper.RentApartmentMapper;
 import com.example.rent_apartment_module.mapper.RentMapper;
 import com.example.rent_apartment_module.model.dto.ApartmentInfoDto;
@@ -15,7 +15,10 @@ import com.example.rent_apartment_module.model.entity.AddressEntityRent;
 import com.example.rent_apartment_module.model.entity.ApartmentEntityRent;
 import com.example.rent_apartment_module.model.entity.BookingEntityRent;
 import com.example.rent_apartment_module.model.entity.UserRentEntityRent;
-import com.example.rent_apartment_module.repository.*;
+import com.example.rent_apartment_module.repository.AddressRepository;
+import com.example.rent_apartment_module.repository.ApartmentRepository;
+import com.example.rent_apartment_module.repository.BookingRepository;
+import com.example.rent_apartment_module.repository.UserRentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -24,8 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.example.rent_apartment_module.constant.RentApartmentConstant.IS_FREE;
-import static com.example.rent_apartment_module.constant.RentApartmentConstant.SAVE_NEW_APARTMENT_MESSAGE;
+import static com.example.rent_apartment_module.constant.RentApartmentConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,16 +51,11 @@ public class ApartmentServiceImpl implements ApartmentService {
 
     private final UserRentRepository userRepository;
 
-    private final UserRentDao userDao;
-
-    private final IntegrationRepository integrationRepository;
-
     private final KafkaTemplate<String, String> kafkaTemplate;
 
 
     @Override
     public String saveApartmentEntity(ApartmentInfoDto apartmentInfoDto) {
-
         ApartmentEntityRent apartment = mapper.toApartmentEntity(apartmentInfoDto);
         apartmentRepository.save(apartment);
         AddressEntityRent address = mapper.toAddressEntity(apartmentInfoDto);
@@ -91,7 +88,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public void bookingApartment(BookingInfoDto bookingInfoDto, Long apartmentId, String token) {
+    public String bookingApartment(BookingInfoDto bookingInfoDto, Long apartmentId, String token) {
         BookingEntityRent bookingInfoEntity = mapper.toBookingInfoEntity(bookingInfoDto);
         UserRentEntityRent userRentEntityRent = userRepository.findByToken(token);
         ApartmentEntityRent apartmentEntityRent = apartmentRepository.findById(apartmentId).get();
@@ -100,11 +97,10 @@ public class ApartmentServiceImpl implements ApartmentService {
         BookingEntityRent saved = bookingRepository.save(bookingInfoEntity);
         try {
             integrationService.getInfoByBookingId(apartmentId);
-        } catch (Exception e) {
+        } catch (RestTemplateException e) {
             kafkaTemplate.send("booking_id", String.valueOf(saved.getId()));
-            //:todo  вызов кафка брокера
         }
-        //  return "Бронирование прошло успешно";
+        return MESSAGE_BOOKING;
     }
 
     private String getCityName(List<Result> results) {
