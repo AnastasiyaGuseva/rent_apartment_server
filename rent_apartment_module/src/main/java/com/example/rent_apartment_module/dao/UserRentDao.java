@@ -3,7 +3,6 @@ package com.example.rent_apartment_module.dao;
 import com.example.rent_apartment_module.model.entity.UserRentEntityRent;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserRentDao {
     UserRentEntityRent findUserByNickName(String nickName);

@@ -7,5 +7,6 @@ public interface UserRentService {
     String saveUserRentEntity(RegistrationUserInfoDto userInfoDto);
 
     String authUserRentEntity(AuthorisationUserInfoDto userInfoDto);
+
     Boolean findByToken(String token);
 }

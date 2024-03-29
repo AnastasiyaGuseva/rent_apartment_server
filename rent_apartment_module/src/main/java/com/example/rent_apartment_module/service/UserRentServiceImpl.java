@@ -7,7 +7,10 @@ import com.example.rent_apartment_module.model.dto.AuthorisationUserInfoDto;
 import com.example.rent_apartment_module.model.dto.RegistrationUserInfoDto;
 import com.example.rent_apartment_module.model.entity.UserRentEntityRent;
 import com.example.rent_apartment_module.repository.UserRentRepository;
+import com.example.rent_apartment_module.scheduler.RatingScheduler;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +23,7 @@ import static java.util.Objects.isNull;
 @Service
 @RequiredArgsConstructor
 public class UserRentServiceImpl implements UserRentService {
+    private Logger log = LoggerFactory.getLogger(RatingScheduler.class);
 
     private final UserRentRepository userRentRepository;
 
@@ -29,7 +33,7 @@ public class UserRentServiceImpl implements UserRentService {
 
     @Override
     public String saveUserRentEntity(RegistrationUserInfoDto userInfoDto) {
-
+        log.info("UserRentServiceImpl: saveUserRentEntity()");
         UserRentEntityRent userByNickName = userRentDao.findUserByNickNameQueryDSL(userInfoDto.getNickName());
         if (!isNull(userByNickName)) {
             throw new UserAuthException(NOT_UNIQUE_NICKNAME, NOT_UNIQUE_NICKNAME_CODE);
@@ -38,7 +42,8 @@ public class UserRentServiceImpl implements UserRentService {
         if (!isNull(userByLogin)) {
             throw new IncorrectLoginException(LOGGING_EXCEPTION, LOGGING_EXCEPTION_CODE);
         }
-
+        log.info("saveUserRentEntity() MAPPING AND SAVE USER");
+        //:todo LOGGER MAPPING
         userRentRepository.save(mapper.toUserRentEntity(userInfoDto));
 
         return SUCCESSFUL_REGISTRATION;

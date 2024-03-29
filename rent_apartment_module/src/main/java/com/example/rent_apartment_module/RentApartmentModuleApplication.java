@@ -12,6 +12,7 @@ public class RentApartmentModuleApplication {
         SpringApplication.run(RentApartmentModuleApplication.class, args);
     }
 
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

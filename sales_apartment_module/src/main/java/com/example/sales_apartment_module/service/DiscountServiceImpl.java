@@ -4,6 +4,8 @@ import com.example.sales_apartment_module.model.entity.BookingEntitySales;
 import com.example.sales_apartment_module.repository.BookingEntityRepository;
 import com.example.sales_apartment_module.repository.ProductDiscountRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Month;
@@ -22,9 +24,12 @@ public class DiscountServiceImpl implements DiscountService {
     private final ProductDiscountRepository discountRepository;
 
     private final EmailSenderService emailSenderService;
+    private Logger log = LoggerFactory.getLogger(DiscountServiceImpl.class);
 
     //метод получение бронирования по id
     public BookingEntitySales bookingByID(Long id) {
+        log.info("ApartmentServiceImpl: bookingByID()");
+        log.info("bookingByID(): GET USER BY TOKEN");
         return bookingRepository.findById(id).get();
     }
 
@@ -92,7 +97,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     //метод проверки группового бронирования
     private Integer discountByPeopleAmount(Long id) {
-        BookingEntitySales bookingEntitySales = bookingByID(id);//LazyInitialization
+        BookingEntitySales bookingEntitySales = bookingByID(id);
         if (bookingEntitySales.getPeopleAmount() >= 3 &&
                 discountRepository.findById(4L).get().getIsDiscountActive().equals(true)) {
             Integer discountAmount = discountRepository.findById(4L).get().getDiscountAmount();
@@ -124,10 +129,13 @@ public class DiscountServiceImpl implements DiscountService {
                 discountByBookingAmount(id),
                 discountByFirstBooking(id)
         ).stream().min(Comparator.comparingInt(Integer::intValue)).get();
+        log.info("optimalDiscount(): GET BOOKING BY ID");
         BookingEntitySales bookingEntitySales = bookingByID(id);
         bookingEntitySales.setFinalCost(individualCost);
         bookingRepository.save(bookingEntitySales);
+        log.info("optimalDiscount(): SEND BOOKING EMAIL");
         sendEmail(id);
+        log.info("optimalDiscount(): GET BOOKING BY ID");
         return MESSAGE_MAIL;
     }
 
@@ -136,7 +144,7 @@ public class DiscountServiceImpl implements DiscountService {
         String city = bookingEntitySales.getApartmentId().getAddress().getCity();
         String street = bookingEntitySales.getApartmentId().getAddress().getStreet();
         String homeNumber = bookingEntitySales.getApartmentId().getAddress().getHomeNumber();
-        String message = String.format(MESSAGE, city, street, homeNumber,
+        String message = String.format(MESSAGE_BOOKING_RESULT, city, street, homeNumber,
                 bookingEntitySales.getFinalCost());
         emailSenderService.sendEmail(MESSAGE_BOOKING, message, bookingEntitySales.getUserId().getLogin());
     }

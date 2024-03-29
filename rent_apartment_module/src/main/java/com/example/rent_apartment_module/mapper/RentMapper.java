@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RentMapper {
-
     ApartmentInfoDto toApartmentDto(ApartmentEntityRent apartment, AddressEntityRent address);
 
     default List<ApartmentInfoDto> toApartmentInfoListDto(List<ApartmentEntityRent> apartments) {

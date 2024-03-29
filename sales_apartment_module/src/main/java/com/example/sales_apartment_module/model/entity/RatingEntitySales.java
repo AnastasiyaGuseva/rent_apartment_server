@@ -1,6 +1,5 @@
 package com.example.sales_apartment_module.model.entity;
 
-import com.example.sales_apartment_module.model.entity.ApartmentEntitySales;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
